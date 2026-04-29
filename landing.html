@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ClipMind — AI Video Transcript & Chat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+    <!-- ════════════════════════════════════
+       NAVBAR
+  ════════════════════════════════════ -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-inner">
+
+            <div class="nav-logo">
+                <div class="logo-icon">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" fill="#ff6c2f" opacity="0.9" />
+                        <path d="M7 10L9.5 12.5L14 8" stroke="white" stroke-width="1.6" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <span class="logo-text">ClipMind</span>
+                <span class="logo-badge">AI</span>
+            </div>
+
+            <div class="nav-links">
+                <a href="#library-section" class="nav-link">Library</a>
+                <a href="#upload-section" class="nav-link">Transcribe</a>
+                <a href="#chat-section" class="nav-link">Chat</a>
+                <a href="#generate-section" class="nav-link">Generate</a>
+                <a href="#how-section" class="nav-link">How it works</a>
+            </div>
+
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle dark/light mode">
+                    <span class="theme-icon" id="themeIcon">
+                        <!-- sun icon -->
+                        <svg id="sunIcon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.4" />
+                            <path
+                                d="M8 1v2M8 13v2M1 8h2M13 8h2M3.22 3.22l1.41 1.41M11.37 11.37l1.41 1.41M3.22 12.78l1.41-1.41M11.37 4.63l1.41-1.41"
+                                stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+                        </svg>
+                        <!-- moon icon -->
+                        <svg id="moonIcon" width="16" height="16" viewBox="0 0 16 16" fill="none" style="display:none">
+                            <path d="M13.5 10.5A6 6 0 015.5 2.5a6 6 0 008 8z" stroke="currentColor" stroke-width="1.4"
+                                stroke-linecap="round" />
+                        </svg>
+                    </span>
+                    <span id="themeLabel">Light</span>
+                </button>
+                <button class="btn-nav-ghost">Log in</button>
+                <button class="btn-nav-primary">Sign up free</button>
+            </div>
+
+        </div>
+    </nav>
+
+    <!-- ════════════════════════════════════
+       HERO
+  ════════════════════════════════════ -->
+    <section class="hero-section">
+        <div class="hero-glow"></div>
+        <div class="container">
+            <div class="hero-badge reveal">
+                <span class="badge-pulse"></span>
+                Powered by Claude AI · 99 languages
+            </div>
+            <h1 class="hero-title reveal">
+                Transcribe, Chat &amp;<br />Generate from Any Video
+            </h1>
+            <p class="hero-subtitle reveal">
+                Paste a YouTube URL, upload a video or audio file — get an instant transcript,
+                ask questions about the content, and generate new clips or audio on demand.
+            </p>
+            <div class="hero-stats reveal">
+                <div class="stat-item"><span class="stat-num">99</span><span class="stat-label">languages</span></div>
+                <div class="stat-divider"></div>
+                <div class="stat-item"><span class="stat-num">6</span><span class="stat-label">export formats</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item"><span class="stat-num">&lt;30s</span><span class="stat-label">average time</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ════════════════════════════════════
+       LIBRARY — saved videos from database
+  ════════════════════════════════════ -->
+    <section class="main-section library-section" id="library-section">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">Library</span>
+                <h2 class="section-title">Your saved videos</h2>
+                <p class="section-desc">Pick a video you already processed to load its transcript and chat.</p>
+            </div>
+            <div class="library-toolbar reveal">
+                <button type="button" class="btn-secondary-sm" onclick="loadLibrary()" title="Refresh list">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path d="M1 7a6 6 0 0110.24-4.24M13 7a6 6 0 01-10.24 4.24M13 7h-3M4 7H1" stroke="currentColor"
+                            stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    Refresh
+                </button>
+            </div>
+            <div class="library-grid reveal" id="libraryGrid">
+                <p class="library-loading">Loading library…</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ════════════════════════════════════
+       SECTION 1 — UPLOAD & TRANSCRIPT
+  ════════════════════════════════════ -->
+    <section class="main-section" id="upload-section">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">Step 01</span>
+                <h2 class="section-title">Add your media</h2>
+                <p class="section-desc">YouTube link, local video, or audio file — we handle them all.</p>
+            </div>
+
+            <div class="input-card reveal">
+
+                <!-- SOURCE TABS -->
+                <div class="source-tabs">
+                    <button class="source-tab active" data-tab="youtube" onclick="switchSource('youtube')">
+                        <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                            <rect x="1" y="3" width="13" height="9" rx="2" stroke="currentColor" stroke-width="1.3" />
+                            <path d="M6 6l4 1.5L6 9V6z" fill="currentColor" />
+                        </svg>
+                        YouTube
+                    </button>
+                    <button class="source-tab" data-tab="video" onclick="switchSource('video')">
+                        <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                            <rect x="1" y="2" width="9" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3" />
+                            <path d="M10 5.5l4-2v8l-4-2v-4z" stroke="currentColor" stroke-width="1.3"
+                                stroke-linejoin="round" />
+                        </svg>
+                        Video file
+                    </button>
+                    <button class="source-tab" data-tab="audio" onclick="switchSource('audio')">
+                        <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                            <circle cx="7.5" cy="7.5" r="6" stroke="currentColor" stroke-width="1.3" />
+                            <path d="M5.5 5.5v4M7.5 4v7M9.5 5.5v4" stroke="currentColor" stroke-width="1.3"
+                                stroke-linecap="round" />
+                        </svg>
+                        Audio file
+                    </button>
+                </div>
+
+                <!-- YOUTUBE PANEL -->
+                <div class="source-panel active" id="panel-youtube">
+                    <div class="url-input-row">
+                        <div class="url-input-wrap">
+                            <svg class="url-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M6.5 9.5l3-3M4 12l2.5-2.5M12 4l-2.5 2.5" stroke="currentColor"
+                                    stroke-width="1.4" stroke-linecap="round" />
+                                <circle cx="10.5" cy="5.5" r="2" stroke="currentColor" stroke-width="1.3" />
+                                <circle cx="5.5" cy="10.5" r="2" stroke="currentColor" stroke-width="1.3" />
+                            </svg>
+                            <input type="text" class="url-input" id="youtubeUrl"
+                                placeholder="https://youtube.com/watch?v=..." />
+                        </div>
+                        <button class="btn-primary-orange" onclick="transcribeYoutube()">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <path d="M5 2.5L11.5 7 5 11.5V2.5z" fill="white" />
+                            </svg>
+                            Transcribe
+                        </button>
+                    </div>
+                    <div class="supported-note">Supports YouTube, YouTube Shorts, and YouTube Music links</div>
+                </div>
+
+                <!-- VIDEO UPLOAD PANEL -->
+                <div class="source-panel" id="panel-video">
+                    <div class="drop-zone" id="videoDrop" onclick="triggerUpload('videoFile')"
+                        ondragover="onDragOver(event,'videoDrop')" ondragleave="onDragLeave('videoDrop')"
+                        ondrop="onDrop(event,'videoFile','videoDrop')">
+                        <input type="file" id="videoFile" accept="video/*" style="display:none"
+                            onchange="handleFileChange(this,'video')" />
+                        <div class="drop-content">
+                            <div class="drop-icon-wrap">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <rect x="2" y="4" width="20" height="16" rx="3" stroke="currentColor"
+                                        stroke-width="1.5" />
+                                    <path d="M9 9l6 3-6 3V9z" fill="currentColor" />
+                                </svg>
+                            </div>
+                            <div class="drop-title">Drag &amp; drop video here</div>
+                            <div class="drop-sub">or <span class="drop-link">browse files</span></div>
+                            <div class="drop-formats">MP4 · MOV · MKV · AVI · WEBM · up to 4 GB</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AUDIO UPLOAD PANEL -->
+                <div class="source-panel" id="panel-audio">
+                    <div class="drop-zone" id="audioDrop" onclick="triggerUpload('audioFile')"
+                        ondragover="onDragOver(event,'audioDrop')" ondragleave="onDragLeave('audioDrop')"
+                        ondrop="onDrop(event,'audioFile','audioDrop')">
+                        <input type="file" id="audioFile" accept="audio/*" style="display:none"
+                            onchange="handleFileChange(this,'audio')" />
+                        <div class="drop-content">
+                            <div class="drop-icon-wrap">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 3v13M8 7v5M16 5v9M4 11v1M20 10v3" stroke="currentColor"
+                                        stroke-width="1.6" stroke-linecap="round" />
+                                    <path d="M3 18h18" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"
+                                        opacity="0.4" />
+                                </svg>
+                            </div>
+                            <div class="drop-title">Drag &amp; drop audio here</div>
+                            <div class="drop-sub">or <span class="drop-link">browse files</span></div>
+                            <div class="drop-formats">MP3 · WAV · M4A · OGG · FLAC · up to 2 GB</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PROGRESS BAR -->
+                <div class="progress-wrap" id="progressWrap" style="display:none">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-label" id="progressLabel">Analysing media…</div>
+                </div>
+
+            </div>
+
+            <!-- TRANSCRIPT RESULT -->
+            <div class="transcript-card reveal" id="transcriptCard" style="display:none">
+                <div class="tc-header">
+                    <div class="tc-header-left">
+                        <span class="tc-title">Transcript</span>
+                        <span class="tc-badge ready">
+                            <span class="badge-dot-green"></span>Ready
+                        </span>
+                    </div>
+                    <div class="tc-header-right">
+                        <div class="view-toggle">
+                            <button class="view-btn active" id="vWords" onclick="setView('words')">Words</button>
+                            <button class="view-btn" id="vSpeaker" onclick="setView('speaker')">Speakers</button>
+                        </div>
+                        <button class="btn-icon-sm" onclick="copyTranscript()" title="Copy all">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <rect x="3" y="3" width="8" height="9" rx="1.5" stroke="currentColor"
+                                    stroke-width="1.3" />
+                                <path d="M5 3V2a1 1 0 011-1h5a1 1 0 011 1v8a1 1 0 01-1 1h-1" stroke="currentColor"
+                                    stroke-width="1.3" />
+                            </svg>
+                        </button>
+                        <div class="export-dropdown-wrap">
+                            <button class="btn-export" onclick="toggleExport()">
+                                Export
+                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                    <path d="M3 4.5l3 3 3-3" stroke="currentColor" stroke-width="1.3"
+                                        stroke-linecap="round" />
+                                </svg>
+                            </button>
+                            <div class="export-menu" id="exportMenu" style="display:none">
+                                <button class="export-item" onclick="exportAs('TXT')"><span
+                                        class="export-fmt">TXT</span> Plain text</button>
+                                <button class="export-item" onclick="exportAs('SRT')"><span
+                                        class="export-fmt">SRT</span> Subtitles</button>
+                                <button class="export-item" onclick="exportAs('VTT')"><span
+                                        class="export-fmt">VTT</span> Web captions</button>
+                                <button class="export-item" onclick="exportAs('DOCX')"><span
+                                        class="export-fmt">DOCX</span> Word document</button>
+                                <button class="export-item" onclick="exportAs('PDF')"><span
+                                        class="export-fmt">PDF</span> PDF file</button>
+                                <button class="export-item" onclick="exportAs('JSON')"><span
+                                        class="export-fmt">JSON</span> Structured data</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tc-body" id="tcBody"></div>
+                <div class="tc-footer">
+                    <span class="tc-meta" id="tcMeta">0 segments · 0 words</span>
+                    <button class="btn-to-chat" onclick="scrollToChat()">
+                        Ask questions about this →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ════════════════════════════════════
+       SECTION 2 — CHAT WITH AI
+  ════════════════════════════════════ -->
+    <section class="main-section" id="chat-section">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">Step 02</span>
+                <h2 class="section-title">Chat with the content</h2>
+                <p class="section-desc">Ask anything about the transcript. The AI reads the full content and answers in
+                    context.</p>
+            </div>
+
+            <div class="chat-layout reveal">
+                <div class="chat-card">
+                    <div class="chat-header">
+                        <div class="chat-header-left">
+                            <div class="ai-avatar">
+                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                    <path d="M7 1L13 4.5V9.5L7 13L1 9.5V4.5L7 1Z" fill="#ff6c2f" />
+                                    <path d="M4.5 7l2 2 3-3" stroke="white" stroke-width="1.3" stroke-linecap="round" />
+                                </svg>
+                            </div>
+                            <span class="chat-header-title">ClipMind AI</span>
+                            <span class="chat-status-pill">
+                                <span class="status-dot"></span>online
+                            </span>
+                        </div>
+                        <button class="btn-clear-chat" onclick="clearChat()">Clear chat</button>
+                    </div>
+
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="chat-msg ai" id="welcomeMsg">
+                            <div class="msg-avatar ai-av">
+                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                    <path d="M6 1L11 3.5V8.5L6 11L1 8.5V3.5L6 1Z" fill="white" />
+                                </svg>
+                            </div>
+                            <div class="msg-bubble ai-bubble">
+                                <p>Hello! I'm ready to answer questions about your video content.</p>
+                                <p style="margin-top:8px;opacity:0.7;font-size:12px">Transcribe a video above first,
+                                    then ask me anything — key points, summaries, quotes, timestamps, and more.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-suggestions" id="chatSuggestions">
+                        <button class="suggestion-chip" onclick="useSuggestion(this)">Summarize the main points</button>
+                        <button class="suggestion-chip" onclick="useSuggestion(this)">Who are the speakers?</button>
+                        <button class="suggestion-chip" onclick="useSuggestion(this)">What statistics were
+                            mentioned?</button>
+                        <button class="suggestion-chip" onclick="useSuggestion(this)">Key conclusions from this
+                            video</button>
+                        <button class="suggestion-chip" onclick="useSuggestion(this)">Give me a timeline of
+                            topics</button>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <div class="chat-input-row">
+                            <textarea class="chat-textarea" id="chatInput"
+                                placeholder="Ask anything about the transcript…" rows="1" onkeydown="chatKeyDown(event)"
+                                oninput="autoResize(this)"></textarea>
+                            <button class="chat-send-btn" id="chatSendBtn" onclick="sendChat()">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M2 8l12-6-4 6 4 6-12-6z" fill="white" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="chat-input-hint">Press Enter to send · Shift+Enter for new line</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ════════════════════════════════════
+       SECTION 3 — GENERATE VIDEO / AUDIO
+  ════════════════════════════════════ -->
+    <section class="main-section" id="generate-section">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">Step 03</span>
+                <h2 class="section-title">Generate &amp; download</h2>
+                <p class="section-desc">Create a new video with captions or an audio file from the transcript. Download
+                    instantly.</p>
+            </div>
+
+            <div class="generate-grid reveal">
+
+                <!-- GENERATE VIDEO -->
+                <div class="gen-card">
+                    <div class="gen-card-icon video-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <rect x="2" y="4" width="15" height="16" rx="2.5" stroke="currentColor"
+                                stroke-width="1.5" />
+                            <path d="M17 9l5-3v12l-5-3V9z" stroke="currentColor" stroke-width="1.5"
+                                stroke-linejoin="round" />
+                            <path d="M6 10l5 2.5L6 15V10z" fill="currentColor" opacity="0.6" />
+                        </svg>
+                    </div>
+                    <h3 class="gen-card-title">Video with captions</h3>
+                    <p class="gen-card-desc">Generate an MP4 with burned-in transcript captions. Choose style, font
+                        size, and position.</p>
+
+                    <div class="gen-options">
+                        <div class="gen-option-row">
+                            <label class="gen-label">Caption style</label>
+                            <select class="gen-select" id="captionStyle">
+                                <option>Bold white on black</option>
+                                <option>Minimal white</option>
+                                <option>Highlighted word</option>
+                                <option>No captions</option>
+                            </select>
+                        </div>
+                        <div class="gen-option-row">
+                            <label class="gen-label">Font size</label>
+                            <select class="gen-select" id="fontSize">
+                                <option>Small (20px)</option>
+                                <option selected>Medium (28px)</option>
+                                <option>Large (36px)</option>
+                            </select>
+                        </div>
+                        <div class="gen-option-row">
+                            <label class="gen-label">Position</label>
+                            <select class="gen-select" id="captionPos">
+                                <option>Bottom centre</option>
+                                <option>Top centre</option>
+                                <option>Middle</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="btn-generate" id="genVideoBtn" onclick="generateMedia('video')">
+                        <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                            <path d="M3 2.5L12 7.5 3 12.5V2.5z" fill="white" />
+                        </svg>
+                        Generate Video
+                    </button>
+
+                    <div class="download-ready" id="videoDownload" style="display:none">
+                        <div class="download-preview video-preview-thumb">
+                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                                <rect x="2" y="3" width="18" height="22" rx="3" stroke="currentColor" stroke-width="1.5"
+                                    opacity="0.4" />
+                                <path d="M8 12l7 3-7 3V12z" fill="currentColor" />
+                            </svg>
+                            <span>output_captioned.mp4</span>
+                        </div>
+                        <button class="btn-download" onclick="triggerDownload('video')">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <path d="M7 2v8M7 10l-3-3M7 10l3-3" stroke="white" stroke-width="1.4"
+                                    stroke-linecap="round" />
+                                <path d="M2 12h10" stroke="white" stroke-width="1.4" stroke-linecap="round" />
+                            </svg>
+                            Download MP4
+                        </button>
+                    </div>
+                </div>
+
+                <!-- GENERATE AUDIO -->
+                <div class="gen-card">
+                    <div class="gen-card-icon audio-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 3v18M8 7v10M16 5v14M4 10v4M20 9v6" stroke="currentColor" stroke-width="1.6"
+                                stroke-linecap="round" />
+                        </svg>
+                    </div>
+                    <h3 class="gen-card-title">Audio narration</h3>
+                    <p class="gen-card-desc">Convert the transcript to AI voice audio. Choose voice, speed, and download
+                        as MP3 or WAV.</p>
+
+                    <div class="gen-options">
+                        <div class="gen-option-row">
+                            <label class="gen-label">Voice</label>
+                            <select class="gen-select" id="voiceSelect">
+                                <option>Rachel (female, US)</option>
+                                <option>Adam (male, UK)</option>
+                                <option>Emily (female, AU)</option>
+                                <option>Marcus (male, US)</option>
+                            </select>
+                        </div>
+                        <div class="gen-option-row">
+                            <label class="gen-label">Speed</label>
+                            <div class="speed-row">
+                                <input type="range" class="speed-slider" id="speedSlider" min="50" max="200" step="10"
+                                    value="100" oninput="updateSpeed(this.value)" />
+                                <span class="speed-val" id="speedVal">1.0×</span>
+                            </div>
+                        </div>
+                        <div class="gen-option-row">
+                            <label class="gen-label">Format</label>
+                            <div class="format-toggle">
+                                <button class="fmt-btn active" id="fmtMp3" onclick="setAudioFmt('mp3')">MP3</button>
+                                <button class="fmt-btn" id="fmtWav" onclick="setAudioFmt('wav')">WAV</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn-generate audio-gen" id="genAudioBtn" onclick="generateMedia('audio')">
+                        <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                            <circle cx="7.5" cy="7.5" r="6" stroke="white" stroke-width="1.3" />
+                            <path d="M5.5 5.5v4M7.5 4v7M9.5 5.5v4" stroke="white" stroke-width="1.3"
+                                stroke-linecap="round" />
+                        </svg>
+                        Generate Audio
+                    </button>
+
+                    <div class="download-ready" id="audioDownload" style="display:none">
+                        <div class="download-preview audio-preview-thumb">
+                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                                <path d="M14 4v20M10 8v12M18 6v16M6 12v4M22 11v6" stroke="currentColor"
+                                    stroke-width="1.5" stroke-linecap="round" opacity="0.7" />
+                            </svg>
+                            <span id="audioFileName">narration.mp3</span>
+                        </div>
+                        <button class="btn-download audio-dl" onclick="triggerDownload('audio')">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <path d="M7 2v8M7 10l-3-3M7 10l3-3" stroke="white" stroke-width="1.4"
+                                    stroke-linecap="round" />
+                                <path d="M2 12h10" stroke="white" stroke-width="1.4" stroke-linecap="round" />
+                            </svg>
+                            Download Audio
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ════════════════════════════════════
+       SECTION 4 — HOW IT WORKS (SCROLL REVEAL)
+  ════════════════════════════════════ -->
+    <section class="how-section" id="how-section">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">Guide</span>
+                <h2 class="section-title">How it works</h2>
+                <p class="section-desc">Follow these steps to get the most out of ClipMind.</p>
+            </div>
+
+            <div class="steps-track">
+
+                <div class="step-line"></div>
+
+                <div class="step-item reveal" data-delay="0">
+                    <div class="step-num-col">
+                        <div class="step-circle">01</div>
+                    </div>
+                    <div class="step-body">
+                        <div class="step-tag">Getting started</div>
+                        <h3 class="step-title">Choose your media source</h3>
+                        <p class="step-detail">
+                            Select one of three input types at the top of the page: <strong>YouTube URL</strong>,
+                            <strong>Video file</strong>, or <strong>Audio file</strong>. Paste a YouTube link directly
+                            from the address bar — Shorts and Music links work too. For local files, drag them into the
+                            drop zone or click "browse files". Supported video formats: MP4, MOV, MKV, AVI, WEBM.
+                            Supported audio: MP3, WAV, M4A, OGG, FLAC. Maximum file size is 4 GB for video and 2 GB for
+                            audio.
+                        </p>
+                        <div class="step-tip">
+                            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                                <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1.2" />
+                                <path d="M6.5 5.5v4M6.5 4v.5" stroke="currentColor" stroke-width="1.2"
+                                    stroke-linecap="round" />
+                            </svg>
+                            Tip: For best results with local files, use MP4 (H.264) or MP3 format.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-item reveal" data-delay="100">
+                    <div class="step-num-col">
+                        <div class="step-circle">02</div>
+                    </div>
+                    <div class="step-body">
+                        <div class="step-tag">Transcription</div>
+                        <h3 class="step-title">Generate your transcript</h3>
+                        <p class="step-detail">
+                            Click <strong>Transcribe</strong> and our AI begins processing your media. For YouTube
+                            links, we fetch the audio directly — no download needed on your end. For uploads, the file
+                            is sent securely to our servers. Transcription typically takes under 30 seconds for videos
+                            up to 30 minutes. Longer content may take up to 2 minutes. You'll see a live progress bar
+                            during processing. The result includes <strong>timestamps</strong> every 20–30 seconds and
+                            <strong>automatic speaker labels</strong> (Speaker A, Speaker B…). Toggle between Words view
+                            and Speaker view using the buttons in the transcript header.
+                        </p>
+                        <div class="step-tip">
+                            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                                <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1.2" />
+                                <path d="M6.5 5.5v4M6.5 4v.5" stroke="currentColor" stroke-width="1.2"
+                                    stroke-linecap="round" />
+                            </svg>
+                            Tip: Click any transcript segment to highlight it and jump to that timestamp.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-item reveal" data-delay="200">
+                    <div class="step-num-col">
+                        <div class="step-circle">03</div>
+                    </div>
+                    <div class="step-body">
+                        <div class="step-tag">Export</div>
+                        <h3 class="step-title">Export in any format</h3>
+                        <p class="step-detail">
+                            Use the <strong>Export</strong> dropdown in the transcript header to download in six
+                            formats. <strong>TXT</strong> gives you plain text with timestamps. <strong>SRT</strong> and
+                            <strong>VTT</strong> are subtitle files you can upload directly to YouTube, Vimeo, or any
+                            video player. <strong>DOCX</strong> opens in Microsoft Word or Google Docs.
+                            <strong>PDF</strong> is print-ready. <strong>JSON</strong> gives you structured data with
+                            start/end times for every segment — useful for developers. You can also click <strong>Copy
+                                all</strong> to copy the entire transcript to your clipboard in seconds.
+                        </p>
+                        <div class="step-tip">
+                            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                                <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1.2" />
+                                <path d="M6.5 5.5v4M6.5 4v.5" stroke="currentColor" stroke-width="1.2"
+                                    stroke-linecap="round" />
+                            </svg>
+                            Tip: Use SRT export to add subtitles to your YouTube video instantly.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-item reveal" data-delay="300">
+                    <div class="step-num-col">
+                        <div class="step-circle">04</div>
+                    </div>
+                    <div class="step-body">
+                        <div class="step-tag">AI Chat</div>
+                        <h3 class="step-title">Chat with the AI about your content</h3>
+                        <p class="step-detail">
+                            Once your transcript is ready, scroll to the <strong>Chat</strong> section. The AI has read
+                            your entire transcript and is ready to answer questions. You can ask for a summary, ask
+                            about specific speakers, find timestamps for topics, pull out statistics or quotes, or get a
+                            full outline. Click any of the <strong>suggestion chips</strong> above the input box for
+                            one-click questions, or type your own. The AI responds in context — it knows exactly what
+                            was said and when. Press <strong>Enter</strong> to send, or <strong>Shift+Enter</strong> for
+                            a new line in multi-line messages.
+                        </p>
+                        <div class="step-tip">
+                            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                                <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1.2" />
+                                <path d="M6.5 5.5v4M6.5 4v.5" stroke="currentColor" stroke-width="1.2"
+                                    stroke-linecap="round" />
+                            </svg>
+                            Tip: Ask "What timestamp covers topic X?" to navigate long videos quickly.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-item reveal" data-delay="400">
+                    <div class="step-num-col">
+                        <div class="step-circle">05</div>
+                    </div>
+                    <div class="step-body">
+                        <div class="step-tag">Generate</div>
+                        <h3 class="step-title">Generate captioned video or audio narration</h3>
+                        <p class="step-detail">
+                            In the <strong>Generate</strong> section you can create two types of output. <strong>Video
+                                with captions</strong> burns the transcript text into the original video as subtitles —
+                            choose the caption style (bold, minimal, highlighted word), font size (small/medium/large),
+                            and position (bottom, top, middle). Click <strong>Generate Video</strong> and download the
+                            MP4. <strong>Audio narration</strong> converts the transcript text into AI-generated speech
+                            — pick a voice, set the playback speed using the slider (0.5× to 2.0×), and choose MP3 or
+                            WAV. Both outputs process in the cloud and are ready in under 60 seconds for most content.
+                        </p>
+                        <div class="step-tip">
+                            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                                <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1.2" />
+                                <path d="M6.5 5.5v4M6.5 4v.5" stroke="currentColor" stroke-width="1.2"
+                                    stroke-linecap="round" />
+                            </svg>
+                            Tip: Use the "Highlighted word" caption style for engaging social media clips.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ════════════════════════════════════
+       FOOTER
+  ════════════════════════════════════ -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-inner">
+                <div class="footer-logo">
+                    <div class="logo-icon sm">
+                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                            <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" fill="#ff6c2f" opacity="0.9" />
+                        </svg>
+                    </div>
+                    <span>ClipMind</span>
+                </div>
+                <div class="footer-links">
+                    <a href="#">Privacy</a>
+                    <a href="#">Terms</a>
+                    <a href="#">API docs</a>
+                    <a href="#">Contact</a>
+                </div>
+                <div class="footer-copy">© 2025 ClipMind. All rights reserved.</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
